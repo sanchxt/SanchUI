@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/react';
 import './preview.css';
+import React from 'react';
 
 const preview: Preview = {
   parameters: {
@@ -11,6 +12,14 @@ const preview: Preview = {
       },
     },
   },
+  decorators: [
+    (Story) =>
+      React.createElement(
+        'div',
+        { className: 'dark' },
+        React.createElement(Story)
+      ),
+  ],
 };
 
 export default preview;

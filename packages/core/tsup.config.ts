@@ -9,4 +9,8 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   external: ['react', 'react-dom'],
+  async onSuccess() {
+    const { execa } = await import('execa');
+    await execa('postcss', ['src/tailwind.css', '-o', 'dist/tailwind.css']);
+  },
 });
