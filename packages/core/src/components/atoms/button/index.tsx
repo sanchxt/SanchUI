@@ -69,13 +69,13 @@ function Button({
             variant === 'default',
           'bg-secondary text-secondary-foreground hover:bg-secondary/80':
             variant === 'secondary',
-          'border border-input bg-background hover:bg-accent hover:text-accent-foreground':
+          'border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground':
             variant === 'outline',
           'bg-destructive text-destructive-foreground hover:bg-destructive/90':
             variant === 'danger',
           'bg-success text-success-foreground hover:bg-success/90':
             variant === 'success',
-          'bg-background hover:bg-accent hover:text-accent-foreground':
+          'hover:bg-accent hover:text-accent-foreground text-foreground':
             variant === 'ghost',
         },
 

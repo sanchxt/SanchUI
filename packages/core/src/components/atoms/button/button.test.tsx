@@ -1,7 +1,14 @@
-import { CheckIcon } from 'lucide-react';
-import userEvent from '@testing-library/user-event';
-import { render, screen } from '@testing-library/react';
+jest.mock('lucide-react', () => ({
+  CheckIcon: function CheckIcon(props: any) {
+    return <div data-testid={props['data-testid'] || 'check-icon'} />;
+  },
+  Loader2: function Loader2(props: any) {
+    return <div data-testid="loader-icon" className={props.className} />;
+  },
+}));
 
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Button } from './index';
 
 describe('Button', () => {
@@ -35,7 +42,7 @@ describe('Button', () => {
 
     rerender(<Button variant="ghost">Button</Button>);
     button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-background');
+    expect(button).toHaveClass('hover:bg-accent');
   });
 
   it('applies the correct classes for sizes', () => {
@@ -82,15 +89,13 @@ describe('Button', () => {
 
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute('aria-busy', 'true');
-    expect(button).toHaveClass('text-transparent');
+    expect(button).toHaveClass('children:text-transparent');
     expect(screen.getByText('Loading Button')).toBeInTheDocument();
   });
 
   it('renders with left icon correctly', () => {
     render(
-      <Button leftIcon={<CheckIcon data-testid="left-icon" />}>
-        With Icon
-      </Button>
+      <Button leftIcon={<div data-testid="left-icon" />}>With Icon</Button>
     );
 
     expect(screen.getByTestId('left-icon')).toBeInTheDocument();
@@ -99,9 +104,7 @@ describe('Button', () => {
 
   it('renders with right icon correctly', () => {
     render(
-      <Button rightIcon={<CheckIcon data-testid="right-icon" />}>
-        With Icon
-      </Button>
+      <Button rightIcon={<div data-testid="right-icon" />}>With Icon</Button>
     );
 
     expect(screen.getByTestId('right-icon')).toBeInTheDocument();
@@ -112,8 +115,8 @@ describe('Button', () => {
     render(
       <Button
         isLoading
-        leftIcon={<CheckIcon data-testid="left-icon" />}
-        rightIcon={<CheckIcon data-testid="right-icon" />}
+        leftIcon={<div data-testid="left-icon" />}
+        rightIcon={<div data-testid="right-icon" />}
       >
         Loading
       </Button>

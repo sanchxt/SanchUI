@@ -21,4 +21,7 @@ module.exports = {
   },
   testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!lucide-react).+\\.(js|jsx|ts|tsx)$',
+  ],
 };
