@@ -1,6 +1,6 @@
 import type { Preview } from '@storybook/react';
+import { withThemeByClassName } from '@storybook/addon-themes';
 import './preview.css';
-import React from 'react';
 
 const preview: Preview = {
   parameters: {
@@ -13,12 +13,13 @@ const preview: Preview = {
     },
   },
   decorators: [
-    (Story) =>
-      React.createElement(
-        'div',
-        { className: 'dark' },
-        React.createElement(Story)
-      ),
+    withThemeByClassName({
+      themes: {
+        light: '',
+        dark: 'dark',
+      },
+      defaultTheme: 'light',
+    }),
   ],
 };
 
