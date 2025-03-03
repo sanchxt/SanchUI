@@ -42,7 +42,7 @@ describe('Button', () => {
 
     rerender(<Button variant="ghost">Button</Button>);
     button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-background');
+    expect(button).toHaveClass('hover:bg-accent');
   });
 
   it('applies the correct classes for sizes', () => {
