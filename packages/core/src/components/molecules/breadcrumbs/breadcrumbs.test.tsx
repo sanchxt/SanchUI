@@ -177,7 +177,7 @@ describe('Breadcrumb Component', () => {
     );
     expect(screen.getByText('Page')).toHaveClass('custom-page-class');
 
-    const separator = screen.getByRole('presentation');
+    const separator = screen.getByTestId('breadcrumb-separator');
     expect(separator).toHaveClass('custom-separator-class');
   });
 
