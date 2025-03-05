@@ -104,10 +104,14 @@ function BreadcrumbItem({
   isCurrent,
   ...props
 }: BreadcrumbItemProps) {
+  const hasCurrentPage = React.Children.toArray(children).some(
+    (child) => React.isValidElement(child) && child.type === BreadcrumbPage
+  );
+
   return (
     <li
       className={cn('inline-flex items-center', className)}
-      aria-current={isCurrent ? 'page' : undefined}
+      aria-current={isCurrent || hasCurrentPage ? 'page' : undefined}
       {...props}
     >
       {children}
@@ -174,6 +178,7 @@ function BreadcrumbSeparator({
 
   return (
     <span
+      data-testid="breadcrumb-separator"
       role="presentation"
       aria-hidden="true"
       className={cn('text-muted-foreground mx-1', className)}
