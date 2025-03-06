@@ -1,6 +1,6 @@
 import React from 'react';
-import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { Checkbox } from './index';
 
@@ -13,7 +13,7 @@ describe('Checkbox', () => {
   });
 
   it('handles checked state correctly', () => {
-    render(<Checkbox checked readOnly data-testid="checkbox" />);
+    render(<Checkbox checked defaultChecked data-testid="checkbox" />);
     const checkbox = screen.getByTestId('checkbox');
     expect(checkbox).toBeChecked();
   });
@@ -114,5 +114,20 @@ describe('Checkbox', () => {
   it('supports required attribute', () => {
     render(<Checkbox required data-testid="checkbox" />);
     expect(screen.getByTestId('checkbox')).toBeRequired();
+  });
+
+  it('adapts text size based on checkbox size', () => {
+    const { rerender } = render(<Checkbox size="sm" label="Small" />);
+    let labelElement = screen.getByText('Small');
+    expect(labelElement).toHaveClass('text-xs');
+
+    rerender(<Checkbox size="md" label="Medium" />);
+    labelElement = screen.getByText('Medium');
+    expect(labelElement).toHaveClass('text-sm');
+
+    rerender(<Checkbox size="lg" label="Large" />);
+    labelElement = screen.getByText('Large');
+    expect(labelElement).toHaveClass('text-sm');
+    expect(labelElement).toHaveClass('font-medium');
   });
 });

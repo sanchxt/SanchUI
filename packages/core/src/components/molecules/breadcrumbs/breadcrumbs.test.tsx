@@ -1,16 +1,3 @@
-import userEvent from '@testing-library/user-event';
-import { render, screen } from '@testing-library/react';
-
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
-  BreadcrumbEllipsis,
-} from '.';
-
 jest.mock('lucide-react', () => ({
   ChevronRight: function ChevronRight(props: any) {
     return <div data-testid="chevron-right-icon" {...props} />;
@@ -18,10 +5,22 @@ jest.mock('lucide-react', () => ({
   MoreHorizontal: function MoreHorizontal(props: any) {
     return <div data-testid="more-horizontal-icon" {...props} />;
   },
-  HomeIcon: function HomeIcon(props: any) {
+  Home: function Home(props: any) {
     return <div data-testid="home-icon" {...props} />;
   },
 }));
+
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  BreadcrumbEllipsis,
+} from './index';
 
 describe('Breadcrumb Component', () => {
   it('renders basic breadcrumb correctly', () => {
@@ -30,12 +29,12 @@ describe('Breadcrumb Component', () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            <BreadcrumbSeparator />
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink href="/components">Components</BreadcrumbLink>
+            <BreadcrumbSeparator />
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
           </BreadcrumbItem>
@@ -60,8 +59,8 @@ describe('Breadcrumb Component', () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            <BreadcrumbSeparator />
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>Current Page</BreadcrumbPage>
           </BreadcrumbItem>
@@ -80,8 +79,8 @@ describe('Breadcrumb Component', () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            <BreadcrumbSeparator />
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>Page</BreadcrumbPage>
           </BreadcrumbItem>
@@ -100,8 +99,8 @@ describe('Breadcrumb Component', () => {
             <BreadcrumbLink href="/" isRoot>
               Home
             </BreadcrumbLink>
+            <BreadcrumbSeparator />
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>Page</BreadcrumbPage>
           </BreadcrumbItem>
@@ -118,22 +117,22 @@ describe('Breadcrumb Component', () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            <BreadcrumbSeparator />
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink href="/level1">Level 1</BreadcrumbLink>
+            <BreadcrumbSeparator />
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink href="/level1/level2">Level 2</BreadcrumbLink>
+            <BreadcrumbSeparator />
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink href="/level1/level2/level3">
               Level 3
             </BreadcrumbLink>
+            <BreadcrumbSeparator />
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>Current Page</BreadcrumbPage>
           </BreadcrumbItem>
@@ -156,8 +155,8 @@ describe('Breadcrumb Component', () => {
             <BreadcrumbLink href="/" className="custom-link-class">
               Home
             </BreadcrumbLink>
+            <BreadcrumbSeparator className="custom-separator-class" />
           </BreadcrumbItem>
-          <BreadcrumbSeparator className="custom-separator-class" />
           <BreadcrumbItem>
             <BreadcrumbPage className="custom-page-class">Page</BreadcrumbPage>
           </BreadcrumbItem>
@@ -206,5 +205,44 @@ describe('Breadcrumb Component', () => {
     expect(
       screen.getByLabelText('3 more breadcrumb levels')
     ).toBeInTheDocument();
+  });
+
+  it('handles zero count in ellipsis correctly', () => {
+    render(<BreadcrumbEllipsis count={0} />);
+
+    expect(screen.queryByText('0')).not.toBeInTheDocument();
+    expect(
+      screen.getByLabelText('0 more breadcrumb levels')
+    ).toBeInTheDocument();
+  });
+
+  it('applies truncation to long breadcrumb items', () => {
+    render(
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">
+              Very Long Home Page Title That Should Be Truncated
+            </BreadcrumbLink>
+            <BreadcrumbSeparator />
+          </BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbPage>
+              Another Very Long Page Title That Should Also Be Truncated
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    );
+
+    const longLink = screen.getByText(
+      'Very Long Home Page Title That Should Be Truncated'
+    );
+    const longPage = screen.getByText(
+      'Another Very Long Page Title That Should Also Be Truncated'
+    );
+
+    expect(longLink.closest('span')).toHaveClass('truncate');
+    expect(longPage).toHaveClass('truncate');
   });
 });
