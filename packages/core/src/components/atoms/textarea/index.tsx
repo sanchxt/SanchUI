@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '../../../utils/cn';
+import { cn } from '@/utils/cn';
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -65,8 +65,9 @@ function Textarea({
   const [textLength, setTextLength] = React.useState<number>(
     typeof value === 'string' ? value.length : 0
   );
+  const [isFocused, setIsFocused] = React.useState<boolean>(false);
 
-  // connect external ref to interal (if provided)
+  // connect external ref to internal (if provided)
   React.useEffect(() => {
     if (ref && typeof ref === 'function') {
       ref(textareaRef.current);
@@ -81,35 +82,26 @@ function Textarea({
 
     const textarea = textareaRef.current;
 
-    // reset height
+    // reset height to auto to recalculate
     textarea.style.height = 'auto';
 
-    // calc base line height
     const lineHeight = parseInt(
       getComputedStyle(textarea).lineHeight || '24',
       10
     );
-
-    // calc min and max heights
     const minHeight = `${Math.max(minRows, 1) * lineHeight}px`;
-    let maxHeight = '';
+    let maxHeight = maxRows ? `${maxRows * lineHeight}px` : '';
 
-    if (maxRows) maxHeight = `${maxRows * lineHeight}px`;
-
-    // set height to scroll height
-    const newHeight = `${textarea.scrollHeight}px`;
-
-    // apply heights with constraints
     textarea.style.minHeight = minHeight;
     if (maxHeight) textarea.style.maxHeight = maxHeight;
+
+    const newHeight = `${textarea.scrollHeight}px`;
     textarea.style.height = newHeight;
 
-    // overflow only if content exceeds max height
-    if (maxHeight && textarea.scrollHeight > maxRows! * lineHeight) {
-      textarea.style.overflowY = 'auto';
-    } else {
-      textarea.style.overflowY = 'hidden';
-    }
+    textarea.style.overflowY =
+      maxHeight && textarea.scrollHeight > maxRows! * lineHeight
+        ? 'auto'
+        : 'hidden';
   }, [autoResize, maxRows, minRows]);
 
   // handle input changes for auto-resize & character count
@@ -135,6 +127,23 @@ function Textarea({
     [onInput, handleResize]
   );
 
+  // Focus handlers
+  const handleFocus = React.useCallback(
+    (e: React.FocusEvent<HTMLTextAreaElement>) => {
+      setIsFocused(true);
+      props.onFocus?.(e);
+    },
+    [props]
+  );
+
+  const handleBlur = React.useCallback(
+    (e: React.FocusEvent<HTMLTextAreaElement>) => {
+      setIsFocused(false);
+      props.onBlur?.(e);
+    },
+    [props]
+  );
+
   // initial resize on mount / value change / autoResize change
   React.useEffect(() => {
     handleResize();
@@ -145,43 +154,49 @@ function Textarea({
     }
   }, [value, autoResize, handleResize, showCount]);
 
+  const isOverLimit = maxLength && textLength > maxLength;
+  const isNearLimit =
+    maxLength && textLength >= maxLength * 0.9 && textLength < maxLength;
+
   return (
     <div className="w-full">
       <textarea
         className={cn(
           // base styles
-          'flex w-full bg-transparent transition-colors',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-          'disabled:cursor-not-allowed disabled:opacity-50',
-          'placeholder:text-muted-foreground',
-          'resize-none',
-          !autoResize && 'resize-vertical',
-
+          'flex w-full bg-transparent',
+          'text-foreground placeholder:text-muted-foreground/70',
+          'focus-visible:outline-none',
+          'disabled:cursor-not-allowed disabled:opacity-60',
+          autoResize
+            ? 'transition-all duration-200 resize-none'
+            : 'resize-vertical',
           // handle variants
           {
             // outline variant
-            'border border-input rounded-md p-3': variant === 'outline',
-            'hover:border-primary focus-visible:border-primary':
+            'border border-input rounded-md p-3 shadow-sm':
+              variant === 'outline',
+            'hover:border-primary/70 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-1':
               variant === 'outline' && !isInvalid,
-            'border-destructive focus-visible:border-destructive focus-visible:ring-destructive':
+            'border-destructive focus-visible:border-destructive focus-visible:ring-2 focus-visible:ring-destructive/30 focus-visible:ring-offset-1':
               variant === 'outline' && isInvalid,
 
             // filled variant
             'bg-secondary/50 border-0 rounded-md p-3': variant === 'filled',
-            'hover:bg-secondary focus-visible:bg-secondary':
+            'hover:bg-secondary/70 focus-visible:bg-secondary/70 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-1':
               variant === 'filled' && !isInvalid,
-            'bg-destructive/10 focus-visible:ring-destructive':
+            'bg-destructive/10 hover:bg-destructive/15 focus-visible:bg-destructive/15 focus-visible:ring-2 focus-visible:ring-destructive/30 focus-visible:ring-offset-1':
               variant === 'filled' && isInvalid,
 
             // flushed variant
-            'border-0 border-b border-input rounded-none px-0 py-2':
+            'border-0 border-b-2 border-input rounded-none px-0 py-2 transition-colors':
               variant === 'flushed',
-            'hover:border-primary': variant === 'flushed' && !isInvalid,
-            'border-destructive focus-visible:border-destructive':
+            'hover:border-primary/70 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20 focus-visible:ring-offset-0':
+              variant === 'flushed' && !isInvalid,
+            'border-destructive focus-visible:border-destructive focus-visible:ring-1 focus-visible:ring-destructive/20 focus-visible:ring-offset-0':
               variant === 'flushed' && isInvalid,
 
             // unstyled variant
-            'border-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0':
+            'border-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 shadow-none':
               variant === 'unstyled',
           },
 
@@ -192,25 +207,56 @@ function Textarea({
         required={required}
         onChange={handleInputChange}
         onInput={handleInput}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         value={value}
         maxLength={maxLength}
         rows={minRows}
-        aria-invalid={isInvalid}
+        aria-invalid={!!(isInvalid || isOverLimit)}
         {...props}
       />
 
       {/* character count */}
       {showCount && (
         <div
+          data-testid="char-count"
           className={cn(
-            'flex justify-end text-sm text-muted-foreground mt-1',
-            isInvalid && textLength > (maxLength || 0) && 'text-destructive'
+            'flex justify-end items-center text-sm mt-1.5 transition-colors duration-200',
+            isOverLimit
+              ? 'text-destructive'
+              : isNearLimit
+                ? 'text-yellow-500 dark:text-yellow-400'
+                : isFocused
+                  ? 'text-primary/80'
+                  : 'text-muted-foreground'
           )}
         >
-          {counterPrefix && <span className="mr-1">{counterPrefix}</span>}
-          <span>
+          {counterPrefix && (
+            <span className="mr-1 select-none">{counterPrefix}</span>
+          )}
+          <span
+            className={cn(
+              'font-medium transition-all',
+              isOverLimit && 'font-semibold',
+              maxLength &&
+                textLength === maxLength &&
+                'animate-pulse text-yellow-600 dark:text-yellow-400'
+            )}
+          >
             {textLength}
-            {maxLength ? `/${maxLength}` : ''}
+            {maxLength ? (
+              <span
+                className={cn(
+                  isOverLimit
+                    ? 'text-destructive font-semibold'
+                    : isNearLimit
+                      ? 'text-yellow-500 dark:text-yellow-400'
+                      : 'text-muted-foreground/80'
+                )}
+              >
+                /{maxLength}
+              </span>
+            ) : null}
           </span>
         </div>
       )}
