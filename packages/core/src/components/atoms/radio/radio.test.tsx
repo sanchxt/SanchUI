@@ -13,7 +13,7 @@ describe('Radio', () => {
   });
 
   it('handles checked state correctly', () => {
-    render(<Radio checked readOnly data-testid="radio" />);
+    render(<Radio defaultChecked data-testid="radio" />);
     const radio = screen.getByTestId('radio');
     expect(radio).toBeChecked();
   });
@@ -49,7 +49,7 @@ describe('Radio', () => {
 
     expect(radio).toBeDisabled();
     expect(radio).toHaveClass('disabled:cursor-not-allowed');
-    expect(radio).toHaveClass('disabled:opacity-50');
+    expect(radio).toHaveClass('disabled:opacity-60');
 
     await userEvent.click(radio);
     expect(onChange).not.toHaveBeenCalled();
@@ -119,5 +119,19 @@ describe('Radio', () => {
     expect(option1).toHaveAttribute('value', 'option1');
     expect(option2).toHaveAttribute('name', 'options');
     expect(option2).toHaveAttribute('value', 'option2');
+  });
+
+  it('applies font-medium class to label when checked', () => {
+    render(
+      <Radio label="Selected Option" defaultChecked data-testid="radio" />
+    );
+    const label = screen.getByText('Selected Option');
+    expect(label).toHaveClass('font-medium');
+  });
+
+  it('applies correct styling to label when disabled', () => {
+    render(<Radio label="Disabled Option" disabled data-testid="radio" />);
+    const label = screen.getByText('Disabled Option');
+    expect(label).toHaveClass('text-muted-foreground');
   });
 });

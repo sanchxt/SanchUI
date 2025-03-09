@@ -41,27 +41,31 @@ function Radio({
       type="radio"
       className={cn(
         // base styles
-        'appearance-none rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        'checked:border-primary checked:text-primary-foreground',
-        // radio checked style - inner circle
-        'relative',
-        'after:absolute after:rounded-full after:bg-primary after:opacity-0 after:content-[""]',
-        'checked:after:opacity-100',
+        'appearance-none rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+        'disabled:cursor-not-allowed disabled:opacity-60',
+        'checked:border-primary checked:border-[5px] checked:bg-background',
+        'dark:checked:bg-background',
 
-        // size styles - both for outer circle and inner checked circle
+        // hover effects
+        'hover:border-primary/70 dark:hover:border-primary/60',
+        'hover:shadow-sm',
+
+        // focus state
+        'focus-visible:ring-primary/30 dark:focus-visible:ring-primary/40',
+        'focus-visible:ring-offset-background',
+
+        // size styles
         {
-          'h-4 w-4 after:left-1 after:top-1 after:h-2 after:w-2': size === 'sm',
-          'h-5 w-5 after:left-[5px] after:top-[5px] after:h-[10px] after:w-[10px]':
-            size === 'md',
-          'h-6 w-6 after:left-[6px] after:top-[6px] after:h-3 after:w-3':
-            size === 'lg',
+          'h-4 w-4': size === 'sm',
+          'h-5 w-5': size === 'md',
+          'h-6 w-6': size === 'lg',
         },
 
         // invalid state
         {
-          'border-destructive focus-visible:ring-destructive': isInvalid,
-          'border-input': !isInvalid,
+          'border-destructive hover:border-destructive/70 focus-visible:ring-destructive/30':
+            isInvalid,
+          'border-input dark:border-input': !isInvalid,
         },
 
         className
@@ -78,13 +82,21 @@ function Radio({
 
   return (
     <label
-      className={cn('flex items-center gap-2', {
+      className={cn('flex items-center gap-2.5 transition-opacity', {
         'flex-row-reverse justify-end': labelPlacement === 'start',
-        'cursor-not-allowed opacity-50': disabled,
+        'cursor-not-allowed opacity-60': disabled,
+        'cursor-pointer': !disabled,
       })}
     >
       {radio}
-      <span className="text-sm">{label}</span>
+      <span
+        className={cn('text-sm text-foreground dark:text-foreground', {
+          'text-muted-foreground': disabled,
+          'font-medium': props.checked || props.defaultChecked,
+        })}
+      >
+        {label}
+      </span>
     </label>
   );
 }

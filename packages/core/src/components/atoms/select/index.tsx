@@ -71,37 +71,43 @@ function Select({
       <select
         className={cn(
           // base styles
-          'flex w-full bg-transparent transition-colors appearance-none',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-          'disabled:cursor-not-allowed disabled:opacity-50',
+          'flex w-full bg-transparent transition-all appearance-none',
+          'text-foreground font-medium',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+          'disabled:cursor-not-allowed disabled:opacity-60',
           'placeholder:text-muted-foreground',
+
+          // shadow & hover effects
+          'shadow-sm dark:shadow-none',
+          'hover:shadow hover:border-primary/70 dark:hover:border-primary/60',
 
           // variants styles
           {
             // outline variant
             'border border-input rounded-md': variant === 'outline',
-            'hover:border-primary focus-visible:border-primary':
+            'focus-visible:border-primary focus-visible:ring-primary/30 dark:focus-visible:ring-primary/40':
               variant === 'outline' && !isInvalid,
-            'border-destructive focus-visible:border-destructive focus-visible:ring-destructive':
+            'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/30 dark:focus-visible:ring-destructive/40':
               variant === 'outline' && isInvalid,
 
             // filled variant
-            'bg-secondary/50 border-0 rounded-md': variant === 'filled',
-            'hover:bg-secondary focus-visible:bg-secondary':
+            'bg-secondary/50 dark:bg-secondary/30 border-0 rounded-md':
+              variant === 'filled',
+            'hover:bg-secondary/70 dark:hover:bg-secondary/40 focus-visible:bg-secondary/70 dark:focus-visible:bg-secondary/40 focus-visible:ring-primary/30 dark:focus-visible:ring-primary/40':
               variant === 'filled' && !isInvalid,
-            'bg-destructive/10 focus-visible:ring-destructive':
+            'bg-destructive/10 hover:bg-destructive/15 focus-visible:bg-destructive/15 focus-visible:ring-destructive/30 dark:focus-visible:ring-destructive/40':
               variant === 'filled' && isInvalid,
 
             // flushed variant
-            'border-0 border-b border-input rounded-none px-0':
+            'border-0 border-b-2 border-input rounded-none px-0':
               variant === 'flushed',
-            'hover:border-primary': variant === 'flushed' && !isInvalid,
-            'focus-visible:border-primary': variant === 'flushed' && !isInvalid,
-            'border-destructive focus-visible:ring-destructive':
+            'hover:border-primary/70 focus-visible:border-primary focus-visible:ring-primary/20 focus-visible:ring-offset-0':
+              variant === 'flushed' && !isInvalid,
+            'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20 focus-visible:ring-offset-0':
               variant === 'flushed' && isInvalid,
 
             // unstyled variant
-            'border-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0':
+            'border-0 shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 hover:shadow-none':
               variant === 'unstyled',
           },
 
@@ -109,7 +115,7 @@ function Select({
           variant !== 'unstyled' && {
             'h-8 px-3 text-sm': selectSize === 'sm',
             'h-10 px-4 text-base': selectSize === 'md',
-            'h-12 px-6 text-lg': selectSize === 'lg',
+            'h-12 px-5 text-lg': selectSize === 'lg',
           },
 
           // addon styles
@@ -117,6 +123,9 @@ function Select({
             'rounded-l-none border-l-0': Boolean(leftAddon),
             'rounded-r-none border-r-0': Boolean(rightAddon),
           },
+
+          // focus & hover states
+          'focus-visible:ring-offset-background',
 
           className
         )}
@@ -132,6 +141,7 @@ function Select({
                 key={option.value}
                 value={option.value}
                 disabled={option.disabled}
+                className={option.disabled ? 'text-muted-foreground' : ''}
               >
                 {option.label}
               </option>
@@ -141,13 +151,16 @@ function Select({
       {chevronIcon && (
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
           <div
-            className={cn('text-muted-foreground', {
-              'opacity-50': disabled,
-              'text-destructive': isInvalid,
-              'mr-3': selectSize === 'lg',
-              'mr-2': selectSize === 'md',
-              'mr-1': selectSize === 'sm',
-            })}
+            className={cn(
+              'text-muted-foreground transition-transform duration-200',
+              {
+                'opacity-60': disabled,
+                'text-destructive': isInvalid,
+                'mr-3': selectSize === 'lg',
+                'mr-2': selectSize === 'md',
+                'mr-1': selectSize === 'sm',
+              }
+            )}
           >
             {chevronIcon}
           </div>
@@ -156,13 +169,16 @@ function Select({
       {!chevronIcon && (
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
           <div
-            className={cn('text-muted-foreground', {
-              'opacity-50': disabled,
-              'text-destructive': isInvalid,
-              'mr-3': selectSize === 'lg',
-              'mr-2': selectSize === 'md',
-              'mr-1': selectSize === 'sm',
-            })}
+            className={cn(
+              'text-muted-foreground transition-transform duration-200',
+              {
+                'opacity-60': disabled,
+                'text-destructive': isInvalid,
+                'mr-3': selectSize === 'lg',
+                'mr-2': selectSize === 'md',
+                'mr-1': selectSize === 'sm',
+              }
+            )}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -190,7 +206,7 @@ function Select({
     <div
       className={cn(
         'flex w-full items-center',
-        { 'opacity-50 cursor-not-allowed': disabled },
+        { 'opacity-60 cursor-not-allowed': disabled },
         wrapperClassName
       )}
     >
@@ -198,14 +214,15 @@ function Select({
       {leftAddon && (
         <div
           className={cn(
-            'flex items-center justify-center border border-r-0 border-input bg-muted',
+            'flex items-center justify-center border border-r-0 border-input bg-muted/60 text-muted-foreground',
             {
               'h-8 px-3 rounded-l-md': selectSize === 'sm',
               'h-10 px-3 rounded-l-md': selectSize === 'md',
               'h-12 px-4 rounded-l-md': selectSize === 'lg',
               'border-destructive': isInvalid,
-              'border-0 border-b rounded-none': variant === 'flushed',
+              'border-0 border-b-2 rounded-none': variant === 'flushed',
               'rounded-none': variant === 'unstyled',
+              'shadow-sm': variant === 'outline' || variant === 'filled',
             }
           )}
         >
@@ -219,14 +236,15 @@ function Select({
       {rightAddon && (
         <div
           className={cn(
-            'flex items-center justify-center border border-l-0 border-input bg-muted',
+            'flex items-center justify-center border border-l-0 border-input bg-muted/60 text-muted-foreground',
             {
               'h-8 px-3 rounded-r-md': selectSize === 'sm',
               'h-10 px-3 rounded-r-md': selectSize === 'md',
               'h-12 px-4 rounded-r-md': selectSize === 'lg',
               'border-destructive': isInvalid,
-              'border-0 border-b rounded-none': variant === 'flushed',
+              'border-0 border-b-2 rounded-none': variant === 'flushed',
               'rounded-none': variant === 'unstyled',
+              'shadow-sm': variant === 'outline' || variant === 'filled',
             }
           )}
         >

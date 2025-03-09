@@ -61,7 +61,7 @@ describe('Select', () => {
       <Select variant="flushed" options={defaultOptions} data-testid="select" />
     );
     select = screen.getByTestId('select');
-    expect(select).toHaveClass('border-b');
+    expect(select).toHaveClass('border-b-2');
     expect(select).toHaveClass('rounded-none');
 
     rerender(
@@ -82,18 +82,21 @@ describe('Select', () => {
     );
     let select = screen.getByTestId('select');
     expect(select).toHaveClass('h-8');
+    expect(select).toHaveClass('text-sm');
 
     rerender(
       <Select selectSize="md" options={defaultOptions} data-testid="select" />
     );
     select = screen.getByTestId('select');
     expect(select).toHaveClass('h-10');
+    expect(select).toHaveClass('text-base');
 
     rerender(
       <Select selectSize="lg" options={defaultOptions} data-testid="select" />
     );
     select = screen.getByTestId('select');
     expect(select).toHaveClass('h-12');
+    expect(select).toHaveClass('text-lg');
   });
 
   it('handles invalid state correctly', () => {
@@ -117,7 +120,7 @@ describe('Select', () => {
 
     expect(select).toBeDisabled();
     expect(select).toHaveClass('disabled:cursor-not-allowed');
-    expect(select).toHaveClass('disabled:opacity-50');
+    expect(select).toHaveClass('disabled:opacity-60');
   });
 
   it('handles change events', async () => {
@@ -218,7 +221,24 @@ describe('Select', () => {
         data-testid="select"
       />
     );
-    const wrapper = screen.getByTestId('select').closest('.custom-wrapper');
-    expect(wrapper).toHaveClass('custom-wrapper');
+    const select = screen.getByTestId('select');
+    const parentDiv = select.closest('div.relative')?.parentElement;
+    expect(parentDiv).toHaveClass('custom-wrapper');
+  });
+
+  it('adds a font-medium class for better typography', () => {
+    render(<Select options={defaultOptions} data-testid="select" />);
+    expect(screen.getByTestId('select')).toHaveClass('font-medium');
+  });
+
+  it('has proper shadow styling', () => {
+    render(<Select options={defaultOptions} data-testid="select" />);
+    expect(screen.getByTestId('select')).toHaveClass('shadow-sm');
+  });
+
+  it('has proper hover effects', () => {
+    render(<Select options={defaultOptions} data-testid="select" />);
+    expect(screen.getByTestId('select')).toHaveClass('hover:shadow');
+    expect(screen.getByTestId('select')).toHaveClass('hover:border-primary/70');
   });
 });
