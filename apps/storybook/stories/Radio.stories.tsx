@@ -55,70 +55,67 @@ export const Default: Story = {
 };
 
 // sizes
-export const Small: Story = {
-  args: {
-    label: 'Small radio',
-    size: 'sm',
-  },
-};
-
-export const Medium: Story = {
-  args: {
-    label: 'Medium radio',
-    size: 'md',
-  },
-};
-
-export const Large: Story = {
-  args: {
-    label: 'Large radio',
-    size: 'lg',
-  },
+export const Sizes: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div>
+        <p className="text-sm font-medium mb-2">Small</p>
+        <Radio size="sm" label="Small radio" />
+      </div>
+      <div>
+        <p className="text-sm font-medium mb-2">Medium (Default)</p>
+        <Radio size="md" label="Medium radio" />
+      </div>
+      <div>
+        <p className="text-sm font-medium mb-2">Large</p>
+        <Radio size="lg" label="Large radio" />
+      </div>
+    </div>
+  ),
 };
 
 // states
-export const Checked: Story = {
-  args: {
-    label: 'Checked radio',
-    defaultChecked: true,
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    label: 'Disabled radio',
-    disabled: true,
-  },
-};
-
-export const DisabledChecked: Story = {
-  args: {
-    label: 'Disabled checked radio',
-    disabled: true,
-    defaultChecked: true,
-  },
-};
-
-export const Invalid: Story = {
-  args: {
-    label: 'Invalid radio',
-    isInvalid: true,
-  },
+export const States: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div>
+        <p className="text-sm font-medium mb-2">Unchecked</p>
+        <Radio label="Unchecked radio" />
+      </div>
+      <div>
+        <p className="text-sm font-medium mb-2">Checked</p>
+        <Radio label="Checked radio" checked readOnly />
+      </div>
+      <div>
+        <p className="text-sm font-medium mb-2">Invalid</p>
+        <Radio label="Invalid radio" isInvalid />
+      </div>
+      <div>
+        <p className="text-sm font-medium mb-2">Disabled</p>
+        <Radio label="Disabled radio" disabled />
+      </div>
+      <div>
+        <p className="text-sm font-medium mb-2">Disabled & Checked</p>
+        <Radio label="Disabled and checked radio" disabled checked readOnly />
+      </div>
+    </div>
+  ),
 };
 
 // label
-export const LabelStart: Story = {
-  args: {
-    label: 'Label at start',
-    labelPlacement: 'start',
-  },
-};
-
-export const LabelEnd: Story = {
-  args: {
-    label: 'Label at end',
-    labelPlacement: 'end',
-  },
+export const LabelPlacement: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div>
+        <p className="text-sm font-medium mb-2">Label at end (Default)</p>
+        <Radio label="Label at end" labelPlacement="end" />
+      </div>
+      <div>
+        <p className="text-sm font-medium mb-2">Label at start</p>
+        <Radio label="Label at start" labelPlacement="start" />
+      </div>
+    </div>
+  ),
 };
 
 // No label
@@ -129,49 +126,68 @@ export const NoLabel: Story = {
 // radio group
 export const RadioGroup: Story = {
   render: () => {
-    const [value, setValue] = useState('option1');
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(e.target.value);
-    };
+    const [selected, setSelected] = useState('option1');
 
     return (
-      <div className="space-y-2">
-        <h3 className="text-lg font-medium mb-2">Select an option:</h3>
-        <div className="space-y-2">
+      <div className="space-y-4">
+        <p className="text-sm font-medium mb-2">
+          Select your preferred contact method:
+        </p>
+        <div
+          role="radiogroup"
+          aria-label="Contact Method"
+          className="space-y-2"
+        >
           <Radio
-            name="group-example"
+            name="contact"
             value="option1"
-            checked={value === 'option1'}
-            onChange={handleChange}
-            label="Option 1"
+            label="Email"
+            checked={selected === 'option1'}
+            onChange={() => setSelected('option1')}
           />
           <Radio
-            name="group-example"
+            name="contact"
             value="option2"
-            checked={value === 'option2'}
-            onChange={handleChange}
-            label="Option 2"
+            label="Phone"
+            checked={selected === 'option2'}
+            onChange={() => setSelected('option2')}
           />
           <Radio
-            name="group-example"
+            name="contact"
             value="option3"
-            checked={value === 'option3'}
-            onChange={handleChange}
-            label="Option 3"
+            label="SMS"
+            checked={selected === 'option3'}
+            onChange={() => setSelected('option3')}
           />
         </div>
-        <p className="text-sm text-muted-foreground mt-2">Selected: {value}</p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Selected option:{' '}
+          {selected === 'option1'
+            ? 'Email'
+            : selected === 'option2'
+              ? 'Phone'
+              : 'SMS'}
+        </p>
       </div>
     );
   },
 };
 
 // dark theme
-export const WithDarkTheme: Story = {
-  render: (args) => (
-    <div className="dark p-6 rounded-md bg-background">
-      <Radio {...args} label="Dark theme radio" />
+export const DarkTheme: Story = {
+  render: () => (
+    <div
+      className="dark bg-background p-6 rounded-md"
+      style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+    >
+      <h3 className="text-lg font-semibold text-foreground">Dark Theme</h3>
+
+      <div className="space-y-3">
+        <Radio label="Unchecked option" />
+        <Radio label="Checked option" checked readOnly />
+        <Radio label="Invalid option" isInvalid />
+        <Radio label="Disabled option" disabled />
+      </div>
     </div>
   ),
 };
@@ -179,116 +195,172 @@ export const WithDarkTheme: Story = {
 // form example
 export const FormExample: Story = {
   render: () => {
-    const [selectedDelivery, setSelectedDelivery] = useState('standard');
+    const [selectedOption, setSelectedOption] = useState('standard');
 
     return (
-      <form className="w-80 space-y-4" onSubmit={(e) => e.preventDefault()}>
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium">Delivery options:</h3>
+      <form
+        className="w-80 space-y-4 p-6 bg-background border border-border rounded-lg shadow-sm"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <h3 className="text-lg font-semibold mb-4">Shipping Options</h3>
 
-          <div className="space-y-2 border p-3 rounded-md">
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Select shipping method:</p>
+          <div
+            role="radiogroup"
+            aria-label="Shipping Method"
+            className="space-y-3 mt-2"
+          >
             <Radio
-              name="delivery"
+              name="shipping"
               value="standard"
-              checked={selectedDelivery === 'standard'}
-              onChange={(e) => setSelectedDelivery(e.target.value)}
-              label="Standard delivery (3-5 days)"
+              label={
+                <div className="flex flex-col">
+                  <span className="font-medium">Standard Shipping</span>
+                  <span className="text-xs text-muted-foreground">
+                    3-5 business days
+                  </span>
+                </div>
+              }
+              checked={selectedOption === 'standard'}
+              onChange={() => setSelectedOption('standard')}
             />
-            <div className="text-xs text-muted-foreground ml-7">Free</div>
-          </div>
-
-          <div className="space-y-2 border p-3 rounded-md">
             <Radio
-              name="delivery"
+              name="shipping"
               value="express"
-              checked={selectedDelivery === 'express'}
-              onChange={(e) => setSelectedDelivery(e.target.value)}
-              label="Express delivery (1-2 days)"
+              label={
+                <div className="flex flex-col">
+                  <span className="font-medium">Express Shipping</span>
+                  <span className="text-xs text-muted-foreground">
+                    1-2 business days
+                  </span>
+                </div>
+              }
+              checked={selectedOption === 'express'}
+              onChange={() => setSelectedOption('express')}
             />
-            <div className="text-xs text-muted-foreground ml-7">+$9.99</div>
-          </div>
-
-          <div className="space-y-2 border p-3 rounded-md">
             <Radio
-              name="delivery"
-              value="nextDay"
-              checked={selectedDelivery === 'nextDay'}
-              onChange={(e) => setSelectedDelivery(e.target.value)}
-              label="Next day delivery"
+              name="shipping"
+              value="overnight"
+              label={
+                <div className="flex flex-col">
+                  <span className="font-medium">Overnight Shipping</span>
+                  <span className="text-xs text-muted-foreground">
+                    Next business day
+                  </span>
+                </div>
+              }
+              checked={selectedOption === 'overnight'}
+              onChange={() => setSelectedOption('overnight')}
             />
-            <div className="text-xs text-muted-foreground ml-7">+$14.99</div>
           </div>
         </div>
 
         <button
           type="submit"
-          className="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+          className="w-full h-10 rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 transition-colors"
         >
-          Continue to payment
+          Continue
         </button>
       </form>
     );
   },
 };
 
-// custom radio card
-export const RadioCards: Story = {
+// interactive example
+export const InteractiveExample: Story = {
   render: () => {
-    const [selectedPlan, setSelectedPlan] = useState('basic');
+    const [size, setSize] = useState<'sm' | 'md' | 'lg'>('md');
+    const [selected, setSelected] = useState('option1');
 
     return (
-      <div className="space-y-4 w-80">
-        <h3 className="text-lg font-medium">Select a plan:</h3>
+      <div className="bg-background p-2 rounded-md border border-border min-w-80">
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-foreground">
+              Radio Component
+            </h3>
+          </div>
 
-        <div className="space-y-3">
-          {[
-            {
-              id: 'basic',
-              name: 'Basic',
-              price: '$9',
-              features: '5 projects, 2GB storage',
-            },
-            {
-              id: 'pro',
-              name: 'Pro',
-              price: '$19',
-              features: '15 projects, 10GB storage',
-            },
-            {
-              id: 'enterprise',
-              name: 'Enterprise',
-              price: '$49',
-              features: 'Unlimited projects, 100GB storage',
-            },
-          ].map((plan) => (
-            <label
-              key={plan.id}
-              className={`block border rounded-md p-4 cursor-pointer transition-colors ${
-                selectedPlan === plan.id
-                  ? 'border-primary bg-primary/5'
-                  : 'border-input hover:border-primary/50'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <Radio
-                  name="plan"
-                  value={plan.id}
-                  checked={selectedPlan === plan.id}
-                  onChange={(e) => setSelectedPlan(e.target.value)}
-                  className="mt-1"
-                />
-                <div>
-                  <div className="flex items-baseline justify-between">
-                    <h4 className="font-medium">{plan.name}</h4>
-                    <div className="font-medium">{plan.price}/mo</div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {plan.features}
-                  </p>
-                </div>
-              </div>
-            </label>
-          ))}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-foreground">Size:</p>
+            <div className="flex space-x-4">
+              <button
+                onClick={() => setSize('sm')}
+                className={`px-2 py-1 rounded-md text-xs ${
+                  size === 'sm'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-secondary-foreground'
+                }`}
+              >
+                Small
+              </button>
+              <button
+                onClick={() => setSize('md')}
+                className={`px-2 py-1 rounded-md text-xs ${
+                  size === 'md'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-secondary-foreground'
+                }`}
+              >
+                Medium
+              </button>
+              <button
+                onClick={() => setSize('lg')}
+                className={`px-2 py-1 rounded-md text-xs ${
+                  size === 'lg'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-secondary-foreground'
+                }`}
+              >
+                Large
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-sm font-medium text-foreground">Options:</p>
+            <div role="radiogroup" aria-label="Options" className="space-y-3">
+              <Radio
+                name="options"
+                value="option1"
+                label="Option 1"
+                size={size}
+                checked={selected === 'option1'}
+                onChange={() => setSelected('option1')}
+              />
+              <Radio
+                name="options"
+                value="option2"
+                label="Option 2"
+                size={size}
+                checked={selected === 'option2'}
+                onChange={() => setSelected('option2')}
+              />
+              <Radio
+                name="options"
+                value="option3"
+                label="Option 3"
+                size={size}
+                checked={selected === 'option3'}
+                onChange={() => setSelected('option3')}
+              />
+              <Radio
+                name="options"
+                value="option4"
+                label="Disabled option"
+                size={size}
+                disabled
+              />
+              <Radio
+                name="options"
+                value="option5"
+                label="Invalid option"
+                size={size}
+                isInvalid
+              />
+            </div>
+          </div>
         </div>
       </div>
     );

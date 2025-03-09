@@ -1,12 +1,18 @@
-import { useState } from 'react';
-import { Checkbox, CheckboxProps } from '@sanch-ui/core';
+import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import { Checkbox, CheckboxProps } from '@sanch-ui/core';
 
 const meta: Meta<CheckboxProps> = {
   title: 'Components/Forms/Checkbox',
   component: Checkbox,
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'An elegant, accessible checkbox component with multiple states and customization options.',
+      },
+    },
   },
   tags: ['autodocs'],
   argTypes: {
@@ -144,8 +150,37 @@ export const NoLabel: Story = {
 // dark theme
 export const WithDarkTheme: Story = {
   render: (args) => (
-    <div className="dark p-6 rounded-md bg-background">
+    <div className="dark p-6 rounded-lg bg-background">
       <Checkbox {...args} label="Dark theme checkbox" />
+    </div>
+  ),
+};
+
+// theme comparison
+export const ThemeComparison: Story = {
+  render: () => (
+    <div className="grid grid-cols-2 gap-6 max-w-2xl">
+      <div className="p-6 rounded-lg bg-background border flex flex-col gap-4">
+        <h3 className="text-lg font-medium mb-2">Light Theme</h3>
+        <div className="space-y-4">
+          <Checkbox label="Unchecked" />
+          <Checkbox label="Checked" defaultChecked />
+          <Checkbox label="Indeterminate" indeterminate />
+          <Checkbox label="Disabled" disabled />
+          <Checkbox label="Invalid" isInvalid />
+        </div>
+      </div>
+
+      <div className="dark p-6 rounded-lg bg-background border flex flex-col gap-4">
+        <h3 className="text-lg font-medium text-foreground mb-2">Dark Theme</h3>
+        <div className="space-y-4">
+          <Checkbox label="Unchecked" />
+          <Checkbox label="Checked" defaultChecked />
+          <Checkbox label="Indeterminate" indeterminate />
+          <Checkbox label="Disabled" disabled />
+          <Checkbox label="Invalid" isInvalid />
+        </div>
+      </div>
     </div>
   ),
 };
@@ -166,9 +201,9 @@ export const CheckboxGroup: Story = {
     };
 
     return (
-      <div className="space-y-2">
+      <div className="space-y-4">
         <h3 className="text-lg font-medium mb-2">Select options:</h3>
-        <div className="space-y-2">
+        <div className="space-y-3 p-4 border rounded-lg">
           <Checkbox
             value="option1"
             checked={selected.includes('option1')}
@@ -188,8 +223,8 @@ export const CheckboxGroup: Story = {
             label="Option 3"
           />
         </div>
-        <p className="text-sm text-muted-foreground mt-2">
-          Selected: {selected.join(', ')}
+        <p className="text-sm text-muted-foreground">
+          Selected: {selected.join(', ') || 'None'}
         </p>
       </div>
     );
@@ -228,18 +263,18 @@ export const IndeterminateExample: Story = {
     };
 
     return (
-      <div className="space-y-3">
+      <div className="space-y-4">
         <h3 className="text-lg font-medium">Select fruits:</h3>
 
         <Checkbox
           checked={allChecked}
           indeterminate={isIndeterminate}
           onChange={handleParentChange}
-          label="All fruits"
+          label={<span className="font-medium">All fruits</span>}
           size="md"
         />
 
-        <div className="ml-6 space-y-1 border-l pl-6">
+        <div className="ml-6 space-y-2 border-l-2 border-primary/20 pl-4">
           <Checkbox
             value="apple"
             checked={checkedItems.apple}
@@ -261,6 +296,11 @@ export const IndeterminateExample: Story = {
             label="Orange"
             size="sm"
           />
+        </div>
+
+        <div className="text-sm text-muted-foreground pt-2">
+          {Object.entries(checkedItems).filter(([_, v]) => v).length} of{' '}
+          {Object.keys(checkedItems).length} selected
         </div>
       </div>
     );
@@ -285,7 +325,10 @@ export const FormExample: Story = {
     };
 
     return (
-      <form className="w-80 space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="w-80 space-y-4 p-4 border rounded-lg"
+        onSubmit={(e) => e.preventDefault()}
+      >
         <h3 className="text-lg font-medium">Account preferences</h3>
 
         <div className="space-y-3 pt-2">
@@ -359,16 +402,57 @@ export const CheckboxCards: Story = {
         id: 'backup',
         name: 'Auto Backup',
         description: 'Automatic daily backups',
+        icon: (
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+        ),
       },
       {
         id: 'analytics',
         name: 'Analytics',
         description: 'Detailed usage statistics',
+        icon: (
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+        ),
       },
       {
         id: 'api',
         name: 'API Access',
         description: 'Full API access for developers',
+        icon: (
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+        ),
       },
     ];
 
@@ -380,10 +464,10 @@ export const CheckboxCards: Story = {
           {features.map((feature) => (
             <div
               key={feature.id}
-              className={`border rounded-md p-4 cursor-pointer transition-colors ${
+              className={`border rounded-lg p-4 cursor-pointer transition-all ${
                 selected.includes(feature.id)
-                  ? 'border-primary bg-primary/5'
-                  : 'border-input hover:border-primary/50'
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                  : 'border-input hover:border-primary/30'
               }`}
               onClick={() => toggleFeature(feature.id)}
             >
@@ -393,8 +477,11 @@ export const CheckboxCards: Story = {
                   className="mt-1"
                   onChange={() => {}} // Handled by container click
                 />
-                <div>
-                  <h4 className="font-medium">{feature.name}</h4>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">{feature.icon}</span>
+                    <h4 className="font-medium">{feature.name}</h4>
+                  </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     {feature.description}
                   </p>
@@ -454,13 +541,13 @@ export const TodoList: Story = {
           />
           <button
             onClick={addTodo}
-            className="px-3 h-10 rounded-md bg-primary text-primary-foreground"
+            className="px-3 h-10 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
           >
             Add
           </button>
         </div>
 
-        <div className="space-y-2 border rounded-md p-3">
+        <div className="space-y-2 border rounded-lg p-3">
           {todos.length === 0 ? (
             <p className="text-sm text-muted-foreground py-2">No tasks yet</p>
           ) : (

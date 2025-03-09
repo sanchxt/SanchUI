@@ -1,7 +1,75 @@
-import * as React from 'react';
-import { ChevronRight, MoreHorizontal, HomeIcon } from 'lucide-react';
+import React from 'react';
 
-import { cn } from '../../../utils/cn';
+import { cn } from '@/utils/cn';
+
+let ChevronRight: React.ComponentType<{ className?: string }>;
+let MoreHorizontal: React.ComponentType<{ className?: string }>;
+let HomeIcon: React.ComponentType<{ className?: string }>;
+
+try {
+  const icons = require('lucide-react');
+  ChevronRight = icons.ChevronRight;
+  MoreHorizontal = icons.MoreHorizontal;
+  HomeIcon = icons.Home;
+} catch (e) {
+  // fallback icons
+  ChevronRight = ({ className }: { className?: string }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      data-testid="chevron-right-icon"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+
+  MoreHorizontal = ({ className }: { className?: string }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      data-testid="more-horizontal-icon"
+    >
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="19" cy="12" r="1" />
+      <circle cx="5" cy="12" r="1" />
+    </svg>
+  );
+
+  HomeIcon = ({ className }: { className?: string }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      data-testid="home-icon"
+    >
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  );
+}
 
 // *** context ***
 const BreadcrumbContext = React.createContext<{
@@ -37,7 +105,11 @@ function Breadcrumb({
     <BreadcrumbContext.Provider
       value={{ separator, collapsible, maxItems, itemCount, showHomeIcon }}
     >
-      <nav aria-label="Breadcrumb" className={cn('flex', className)} {...props}>
+      <nav
+        aria-label="Breadcrumb"
+        className={cn('flex max-w-full items-center', className)}
+        {...props}
+      >
         {children}
       </nav>
     </BreadcrumbContext.Provider>
@@ -59,30 +131,45 @@ function BreadcrumbList({
 
   // handle collapsible behaviour
   if (collapsible && maxItems && maxItems > 0) {
+    // extract all BreadcrumbItems
     const childrenArray = React.Children.toArray(children).filter(Boolean);
 
-    if (childrenArray.length > maxItems) {
-      const firstElems = childrenArray.slice(0, 1);
-      const lastElems = childrenArray.slice(-Math.max(1, maxItems - 1));
+    // get all breadcrumb items (not separators)
+    const breadcrumbItems = childrenArray.filter(
+      (child) =>
+        React.isValidElement(child) &&
+        (child.type === BreadcrumbItem ||
+          (child.props as { 'data-item'?: string })['data-item'] ===
+            'breadcrumb-item')
+    );
 
-      // collapsed indicator
-      const collapsedCount =
-        childrenArray.length - firstElems.length - lastElems.length;
-      const collapsedElement = (
+    if (breadcrumbItems.length > maxItems) {
+      // keep first and last items as per maxItems config
+      const firstItems = breadcrumbItems.slice(0, 1);
+      const lastItems = breadcrumbItems.slice(-(maxItems - 1));
+
+      // calculate hidden count
+      const hiddenCount =
+        breadcrumbItems.length - firstItems.length - lastItems.length;
+
+      // create ellipsis element
+      const ellipsisItem = (
         <BreadcrumbItem key="collapsed">
-          <BreadcrumbEllipsis count={collapsedCount} />
+          <BreadcrumbEllipsis count={hiddenCount} />
           <BreadcrumbSeparator />
         </BreadcrumbItem>
       );
 
-      modifiedChildren = [...firstElems, collapsedElement, ...lastElems];
+      // combine visible items with ellipsis
+      modifiedChildren = [...firstItems, ellipsisItem, ...lastItems];
     }
   }
 
   return (
     <ol
       className={cn(
-        'flex items-center gap-1.5 flex-wrap text-sm sm:text-base',
+        'flex items-center flex-wrap text-sm',
+        'py-1 overflow-x-auto scrollbar-none',
         className
       )}
       {...props}
@@ -110,7 +197,11 @@ function BreadcrumbItem({
 
   return (
     <li
-      className={cn('inline-flex items-center', className)}
+      className={cn(
+        'inline-flex items-center',
+        'transition-opacity',
+        className
+      )}
       aria-current={isCurrent || hasCurrentPage ? 'page' : undefined}
       {...props}
     >
@@ -139,14 +230,23 @@ function BreadcrumbLink({
   return (
     <Comp
       className={cn(
-        'transition-colors text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:underline',
+        'transition-colors text-muted-foreground hover:text-foreground',
+        'hover:underline focus-visible:outline-none focus-visible:ring-2',
+        'focus-visible:ring-ring focus-visible:rounded-sm',
         'inline-flex items-center gap-1.5',
+        'text-sm font-medium',
         className
       )}
       {...props}
     >
-      {isRoot && showHomeIcon && <HomeIcon className="h-3.5 w-3.5" />}
-      {asChild ? children : <span className="truncate">{children}</span>}
+      {isRoot && showHomeIcon && (
+        <HomeIcon className="h-3.5 w-3.5 flex-shrink-0" />
+      )}
+      {asChild ? (
+        children
+      ) : (
+        <span className="truncate max-w-[180px] md:max-w-xs">{children}</span>
+      )}
     </Comp>
   );
 }
@@ -159,7 +259,10 @@ function BreadcrumbPage({ className, ...props }: BreadcrumbPageProps) {
   return (
     <span
       aria-current="page"
-      className={cn('font-medium text-foreground truncate', className)}
+      className={cn(
+        'font-semibold text-foreground truncate max-w-[200px] md:max-w-xs',
+        className
+      )}
       {...props}
     />
   );
@@ -181,7 +284,11 @@ function BreadcrumbSeparator({
       data-testid="breadcrumb-separator"
       role="presentation"
       aria-hidden="true"
-      className={cn('text-muted-foreground mx-1', className)}
+      className={cn(
+        'text-muted-foreground mx-1 flex-shrink-0',
+        'opacity-70',
+        className
+      )}
       {...props}
     >
       {children || separator}
@@ -204,17 +311,25 @@ function BreadcrumbEllipsis({
     <button
       type="button"
       className={cn(
-        'flex h-7 items-center justify-center px-2 rounded-md',
-        'text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:underline',
+        'flex h-7 items-center justify-center rounded-md',
+        'text-muted-foreground hover:text-foreground hover:bg-accent/50',
+        'transition-colors duration-200',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
         'relative',
         className
       )}
-      aria-label={`${count} more breadcrumb levels`}
+      aria-label={`${count || 0} more breadcrumb levels`}
       {...props}
     >
-      <MoreHorizontal className="h-3.5 w-3.5" />
+      <MoreHorizontal className="h-4 w-4" />
       {count && count > 0 ? (
-        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+        <span
+          className={cn(
+            'absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center',
+            'rounded-full bg-primary text-[10px] font-medium text-primary-foreground',
+            'shadow-sm'
+          )}
+        >
           {count}
         </span>
       ) : null}
