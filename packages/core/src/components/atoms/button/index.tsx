@@ -60,35 +60,50 @@ function Button({
       className={cn(
         // base
         'inline-flex items-center justify-center rounded-md font-medium transition-colors',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         'disabled:pointer-events-none disabled:opacity-50',
+
+        // transitions
+        'transition-all duration-200 ease-in-out',
 
         // variants
         {
+          // default (primary)
           'bg-primary text-primary-foreground hover:bg-primary/90':
             variant === 'default',
+
+          // secondary
           'bg-secondary text-secondary-foreground hover:bg-secondary/80':
             variant === 'secondary',
+
+          // outline
           'border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground':
             variant === 'outline',
+
+          // danger
           'bg-destructive text-destructive-foreground hover:bg-destructive/90':
             variant === 'danger',
+
+          // success
           'bg-success text-success-foreground hover:bg-success/90':
             variant === 'success',
+
+          // ghost
           'hover:bg-accent hover:text-accent-foreground text-foreground':
             variant === 'ghost',
         },
 
-        // size
+        // sizes
         {
-          'h-9 px-3 text-sm gap-1.5': size === 'sm',
-          'h-10 px-4 text-base gap-2': size === 'md',
-          'h-11 px-8 text-lg gap-2.5': size === 'lg',
+          'h-9 px-3 text-sm gap-1.5 rounded-md': size === 'sm',
+          'h-10 px-4 text-sm gap-2 rounded-md': size === 'md',
+          'h-11 px-6 text-base gap-2.5 rounded-md': size === 'lg',
         },
 
         // loading
         isLoading &&
-          'relative children:text-transparent transition-none hover:children:text-transparent',
+          'relative children:text-transparent transition-none hover:children:text-transparent cursor-wait',
+
         className
       )}
       disabled={isDisabled}
@@ -114,13 +129,19 @@ function Button({
       {/* content */}
       <div className={cn('flex items-center gap-2', isLoading && 'invisible')}>
         {!isLoading && leftIcon && (
-          <span className="inline-flex shrink-0" aria-hidden="true">
+          <span
+            className="inline-flex shrink-0 items-center"
+            aria-hidden="true"
+          >
             {leftIcon}
           </span>
         )}
         <span>{children}</span>
         {!isLoading && rightIcon && (
-          <span className="inline-flex shrink-0" aria-hidden="true">
+          <span
+            className="inline-flex shrink-0 items-center"
+            aria-hidden="true"
+          >
             {rightIcon}
           </span>
         )}

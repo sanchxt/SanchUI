@@ -91,6 +91,7 @@ describe('Button', () => {
     expect(button).toHaveAttribute('aria-busy', 'true');
     expect(button).toHaveClass('children:text-transparent');
     expect(screen.getByText('Loading Button')).toBeInTheDocument();
+    expect(button).toHaveClass('cursor-wait');
   });
 
   it('renders with left icon correctly', () => {
@@ -140,5 +141,23 @@ describe('Button', () => {
     );
     const button = screen.getByRole('button');
     expect(button).toHaveAttribute('aria-label', 'Submit form loading');
+  });
+
+  it('applies transition effects classes', () => {
+    render(<Button>Button</Button>);
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('transition-all');
+    expect(button).toHaveClass('duration-200');
+    expect(button).toHaveClass('ease-in-out');
+  });
+
+  it('applies active state transformation', () => {
+    const { rerender } = render(<Button variant="default">Button</Button>);
+    let button = screen.getByRole('button');
+    expect(button).toHaveClass('bg-primary text-primary-foreground');
+
+    rerender(<Button variant="secondary">Button</Button>);
+    button = screen.getByRole('button');
+    expect(button).toHaveClass('bg-secondary text-secondary-foreground');
   });
 });

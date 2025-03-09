@@ -3,23 +3,45 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /* base colors */
   --border: 210 20% 88%;
   --input: 210 20% 88%;
   --ring: 222.2 84% 4.9%;
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
+
+  /* primary - blue */
+  --primary: 224 76% 48%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
+
+  /* secondary - softer gray, slight blue tint */
+  --secondary: 214 32% 91%;
   --secondary-foreground: 222.2 47.4% 11.2%;
+
+  /* destructive - more vibrant red */
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  --success: 142 76% 36%;
+
+  /* success - rich green */
+  --success: 142 76% 40%;
   --success-foreground: 210 40% 98%;
+
+  /* accent - subtle blue-gray */
   --accent: 210 40% 96.1%;
   --accent-foreground: 222.2 47.4% 11.2%;
+
+  /* muted - neutral gray */
   --muted: 210 40% 96.1%;
   --muted-foreground: 215.4 16.3% 46.9%;
+
+  /* animation & effects */
+  --radius: 0.5rem;
+  --transition-fast: 150ms;
+  --transition-medium: 250ms;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-focus: 0 0 0 4px;
 
   /* map to TW utilities */
   --color-border: hsl(var(--border));
@@ -39,31 +61,43 @@
   --color-accent-foreground: hsl(var(--accent-foreground));
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
+  --background: 222.2 47% 6%;
+  --foreground: 213 31% 91%;
 
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 210 40% 98%;
+  /* pimary - bright blue in dark mode */
+  --primary: 217.2 91.2% 60%;
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 217.2 32.6% 17.5%;
+  /* secondary - dark gray with blue tint */
+  --secondary: 217.2 32.6% 20%;
   --secondary-foreground: 210 40% 98%;
 
-  --destructive: 0 84.2% 60.2%;
+  /* destructive - bright red */
+  --destructive: 0 84.2% 65%;
   --destructive-foreground: 210 40% 98%;
 
-  --success: 142 70.6% 45.3%;
+  /* success - bright green */
+  --success: 142 70.6% 48%;
   --success-foreground: 210 40% 98%;
 
+  /* accent - dark blue-gray */
   --accent: 217.2 32.6% 17.5%;
   --accent-foreground: 210 40% 98%;
 
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  /* border colors */
+  --border: 217.2 32.6% 22%;
+  --input: 217.2 32.6% 22%;
+  --ring: 224 76% 60%;
 
+  /* muted */
   --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
+  --muted-foreground: 215 20.2% 70%;
 }

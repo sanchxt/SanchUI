@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from '@sanch-ui/core';
+import { Button, ButtonProps } from '@sanch-ui/core';
 import { Mail, ArrowRight, Github } from 'lucide-react';
 
-const meta = {
+const meta: Meta<ButtonProps> = {
   title: 'Components/Button',
   component: Button,
   parameters: {
@@ -43,7 +43,7 @@ const meta = {
       description: 'Toggle right icon (ArrowRight icon for demo)',
     },
   },
-} satisfies Meta<typeof Button>;
+};
 
 export default meta;
 type Story = StoryObj<typeof meta>;
