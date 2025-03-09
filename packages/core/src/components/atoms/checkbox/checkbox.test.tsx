@@ -13,7 +13,7 @@ describe('Checkbox', () => {
   });
 
   it('handles checked state correctly', () => {
-    render(<Checkbox checked defaultChecked data-testid="checkbox" />);
+    render(<Checkbox defaultChecked data-testid="checkbox" />);
     const checkbox = screen.getByTestId('checkbox');
     expect(checkbox).toBeChecked();
   });
