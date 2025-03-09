@@ -137,4 +137,34 @@ describe('Switch', () => {
     const labelElement = screen.getByText('Toggle me').closest('label');
     expect(labelElement).toHaveClass('custom-wrapper');
   });
+
+  it('adds hover and active scaling effects', () => {
+    render(<Switch data-testid="switch" />);
+    const switchElement = screen.getByTestId('switch').nextElementSibling;
+    expect(switchElement).toHaveClass('hover:scale-[1.02]');
+    expect(switchElement).toHaveClass('active:scale-[0.98]');
+  });
+
+  it('applies border styles to track and thumb', () => {
+    render(<Switch data-testid="switch" />);
+
+    const track = screen.getByTestId('switch-track');
+    const thumb = screen.getByTestId('switch-thumb');
+
+    expect(track).toHaveClass('border');
+    expect(thumb).toHaveClass('border-2');
+  });
+
+  it('adds font-medium to label when checked', () => {
+    render(<Switch label="Toggle me" defaultChecked data-testid="switch" />);
+    const label = screen.getByText('Toggle me');
+    expect(label).toHaveClass('font-medium');
+  });
+
+  it('applies shadow to the thumb', () => {
+    render(<Switch data-testid="switch" />);
+    const thumb = screen.getByTestId('switch-thumb');
+
+    expect(thumb).toHaveClass('shadow-md');
+  });
 });
