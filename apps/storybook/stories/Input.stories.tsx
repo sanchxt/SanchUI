@@ -469,7 +469,7 @@ export const FormExample: Story = {
   render: () => {
     return (
       <form
-        className="w-96 space-y-4 p-6 bg-background border border-border rounded-lg shadow-sm p-2"
+        className="w-96 space-y-4 p-6 bg-background border border-border rounded-lg shadow-sm"
         onSubmit={(e) => e.preventDefault()}
       >
         <h3 className="text-lg font-semibold mb-4">Sign Up Form</h3>
