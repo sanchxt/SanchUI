@@ -89,7 +89,7 @@ export interface OTPInputProps {
   ariaLabel?: string;
 }
 
-export const OTPInput = ({
+const OTPInput = ({
   length = 6,
   value = '',
   onChange,
@@ -358,3 +358,5 @@ export const OTPInput = ({
     </div>
   );
 };
+
+export { OTPInput };
