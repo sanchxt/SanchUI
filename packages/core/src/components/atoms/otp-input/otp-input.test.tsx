@@ -1,8 +1,8 @@
+import { act } from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import { OTPInput } from './index';
-import { act } from 'react';
 
 describe('OTPInput', () => {
   it('renders with default props', () => {
@@ -173,16 +173,14 @@ describe('OTPInput', () => {
 
     pasteEvent.preventDefault = jest.fn();
 
-    // trigger paste event on the first input
-    inputs[0].dispatchEvent(pasteEvent);
+    act(() => {
+      // trigger paste event on the first input
+      inputs[0].dispatchEvent(pasteEvent);
+    });
 
     expect(pasteEvent.preventDefault).toHaveBeenCalled();
     expect(clipboardData.getData).toHaveBeenCalledWith('text/plain');
 
-    // Check if the onChange was triggered with correct value
-    const newValues = ['1', '2', '3', '4', '5', '6'];
-    onChange.mockClear();
-    onChange(newValues.join(''));
     expect(onChange).toHaveBeenCalledWith('123456');
   });
 
@@ -200,8 +198,10 @@ describe('OTPInput', () => {
       preventDefault: jest.fn(),
     };
 
-    // trigger paste event on the first input
-    fireEvent.paste(inputs[0], pasteEvent);
+    act(() => {
+      // trigger paste event on the first input
+      fireEvent.paste(inputs[0], pasteEvent);
+    });
 
     // check if only numbers were kept
     expect(onChange).toHaveBeenCalledWith('123');
