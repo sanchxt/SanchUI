@@ -4,6 +4,7 @@ export * from './components/atoms/checkbox';
 export * from './components/atoms/divider';
 export * from './components/atoms/image';
 export * from './components/atoms/input';
+export * from './components/atoms/link';
 export * from './components/atoms/otp-input';
 export * from './components/atoms/progress';
 export * from './components/atoms/radio';
