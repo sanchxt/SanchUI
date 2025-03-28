@@ -2,17 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/utils/cn';
 import { Check, Copy, Pipette, RefreshCw } from 'lucide-react';
 
-// Define color modes
+// define color modes
 export type ColorMode = 'hex' | 'rgb' | 'hsl';
 
-// Define the shape of the color object
+// define the shape of the color object
 export interface ColorValue {
   hex: string;
   rgb: { r: number; g: number; b: number; a: number };
   hsl: { h: number; s: number; l: number; a: number };
 }
 
-// Default color object
+// default color object
 const defaultColor: ColorValue = {
   hex: '#3B82F6',
   rgb: { r: 59, g: 130, b: 246, a: 1 },
@@ -99,6 +99,13 @@ export interface ColorPickerProps {
    * Component size
    */
   size?: 'sm' | 'md' | 'lg';
+}
+
+interface HSLValue {
+  h: number;
+  s: number;
+  l: number;
+  a: number;
 }
 
 /**
@@ -340,6 +347,15 @@ const generateColorObject = (color: string): ColorValue => {
   return defaultColor;
 };
 
+const roundHslValues = (hsl: HSLValue): HSLValue => {
+  return {
+    h: Math.round(hsl.h),
+    s: Number(hsl.s.toFixed(2)),
+    l: Number(hsl.l.toFixed(2)),
+    a: hsl.a,
+  };
+};
+
 /**
  * Format a color object according to the specified mode
  */
@@ -353,7 +369,8 @@ const formatColor = (color: ColorValue, mode: ColorMode): string => {
         ? `rgba(${r}, ${g}, ${b}, ${a.toFixed(2)})`
         : `rgb(${r}, ${g}, ${b})`;
     case 'hsl':
-      const { h, s, l, a: alpha } = color.hsl;
+      const roundedHsl = roundHslValues(color.hsl);
+      const { h, s, l, a: alpha } = roundedHsl;
       return alpha < 1
         ? `hsla(${h}, ${s}%, ${l}%, ${alpha.toFixed(2)})`
         : `hsl(${h}, ${s}%, ${l}%)`;
@@ -362,7 +379,7 @@ const formatColor = (color: ColorValue, mode: ColorMode): string => {
   }
 };
 
-// Common color presets
+// common color presets
 const defaultPresets = [
   '#000000', // Black
   '#FFFFFF', // White
@@ -404,36 +421,38 @@ const ColorPicker = ({
   ariaLabel = 'Color picker',
   size = 'md',
 }: ColorPickerProps) => {
-  // Check if EyeDropper API is available
+  // check if EyeDropper API is available
   const isEyeDropperSupported =
     typeof window !== 'undefined' && 'EyeDropper' in window;
 
-  // Parse initial color or use default
+  // parse initial color or use default
   const initialColor = value ? generateColorObject(value) : defaultColor;
 
-  // State for color and mode
+  // color and mode
   const [colorObj, setColorObj] = useState<ColorValue>(initialColor);
   const [mode, setMode] = useState<ColorMode>(defaultMode);
   const [recentColors, setRecentColors] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Refs
+  // refs
   const colorPickerRef = useRef<HTMLDivElement>(null);
+  const slAreaRef = useRef<HTMLDivElement>(null);
 
-  // Initialize EyeDropper if supported
+  // init EyeDropper if supported
   const eyeDropperRef = useRef<any>(null);
   if (typeof window !== 'undefined' && 'EyeDropper' in window) {
     eyeDropperRef.current = new (window as any).EyeDropper();
   }
 
-  // Update color object when value prop changes
+  // update color object when value prop changes
   useEffect(() => {
     if (value) {
       setColorObj(generateColorObject(value));
     }
   }, [value]);
 
-  // Helper to get the actual return format
+  // helper to get the actual return format
   const getReturnFormat = (): ColorMode => {
     if (returnFormat === 'auto') {
       // If input was in a specific format, return that format
@@ -445,7 +464,7 @@ const ColorPicker = ({
     return returnFormat as ColorMode;
   };
 
-  // Handle color change and call onChange prop
+  // handle color change and call onChange prop
   const handleColorChange = (newColorObj: ColorValue) => {
     setColorObj(newColorObj);
 
@@ -465,14 +484,14 @@ const ColorPicker = ({
     }
   };
 
-  // Handle hex input change
+  // handle hex input change
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const hex = validateHex(e.target.value);
     const newColorObj = generateColorObject(hex);
     handleColorChange(newColorObj);
   };
 
-  // Handle RGB input changes
+  // handle RGB input changes
   const handleRgbChange = (component: 'r' | 'g' | 'b' | 'a', value: number) => {
     const newRgb = { ...colorObj.rgb, [component]: value };
     const newHex = rgbToHex(newRgb);
@@ -481,23 +500,26 @@ const ColorPicker = ({
     handleColorChange(newColorObj);
   };
 
-  // Handle HSL input changes
+  // handle HSL input changes
   const handleHslChange = (component: 'h' | 's' | 'l' | 'a', value: number) => {
     const newHsl = { ...colorObj.hsl, [component]: value };
     const newRgb = hslToRgb(newHsl);
     const newHex = rgbToHex(newRgb);
-    const newColorObj = { hex: newHex, rgb: newRgb, hsl: newHsl };
+    const roundedHsl = roundHslValues(newHsl);
+    const newColorObj = { hex: newHex, rgb: newRgb, hsl: roundedHsl };
     handleColorChange(newColorObj);
   };
 
-  // Handle hue slider change
+  // handle hue slider change
   const handleHueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleHslChange('h', parseInt(e.target.value, 10));
   };
 
-  // Handle saturation-lightness area click
+  // handle saturation-lightness area
   const handleSLAreaChange = (e: React.MouseEvent<HTMLDivElement>) => {
     if (disabled) return;
+
+    setIsDragging(true);
 
     // Get the bounding rectangle of the color area
     const rect = e.currentTarget.getBoundingClientRect();
@@ -523,28 +545,28 @@ const ColorPicker = ({
     handleColorChange(newColorObj);
   };
 
-  // Handle alpha slider change
+  // handle alpha slider change
   const handleAlphaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     handleHslChange('a', value);
     handleRgbChange('a', value);
   };
 
-  // Handle preset color selection
+  // handle preset color selection
   const handlePresetClick = (color: string) => {
     if (disabled) return;
     const newColorObj = generateColorObject(color);
     handleColorChange(newColorObj);
   };
 
-  // Handle recent color selection
+  // handle recent color selection
   const handleRecentClick = (color: string) => {
     if (disabled) return;
     const newColorObj = generateColorObject(color);
     handleColorChange(newColorObj);
   };
 
-  // Handle eye dropper click
+  // handle eye dropper click
   const handleEyeDropperClick = async () => {
     if (disabled || !isEyeDropperSupported || !eyeDropperRef.current) return;
 
@@ -558,7 +580,7 @@ const ColorPicker = ({
     }
   };
 
-  // Handle copy to clipboard
+  // handle copy to clipboard
   const handleCopyClick = () => {
     // Use the current display mode for the color format
     const formatToUse = mode;
@@ -579,7 +601,42 @@ const ColorPicker = ({
     }
   };
 
-  // Get size classes
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging && slAreaRef.current) {
+        const rect = slAreaRef.current.getBoundingClientRect();
+        const s = Math.max(
+          0,
+          Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)
+        );
+        const l = Math.max(
+          0,
+          Math.min(100, 100 - ((e.clientY - rect.top) / rect.height) * 100)
+        );
+
+        const newHsl = { ...colorObj.hsl, s, l };
+        const newRgb = hslToRgb(newHsl);
+        const newHex = rgbToHex(newRgb);
+        handleColorChange({ hex: newHex, rgb: newRgb, hsl: newHsl });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, colorObj.hsl, handleColorChange]);
+
+  // size classes
   const getSizeClasses = () => {
     switch (size) {
       case 'sm':
@@ -612,7 +669,7 @@ const ColorPicker = ({
 
   const sizeClasses = getSizeClasses();
 
-  // Format current color for display
+  // format current color for display
   const displayColor = formatColor(colorObj, mode);
 
   return (
@@ -627,7 +684,7 @@ const ColorPicker = ({
       aria-label={ariaLabel}
       role="application"
     >
-      {/* Color preview */}
+      {/* color preview */}
       <div className="flex items-center gap-3 mb-4">
         <div
           className={cn(
@@ -639,7 +696,6 @@ const ColorPicker = ({
             opacity: colorObj.rgb.a,
           }}
         >
-          {/* Checkerboard pattern for alpha */}
           {colorObj.rgb.a < 1 && (
             <div className="absolute inset-0 opacity-50 bg-[linear-gradient(45deg,#ccc_25%,transparent_25%,transparent_75%,#ccc_75%),linear-gradient(45deg,#ccc_25%,transparent_25%,transparent_75%,#ccc_75%)] bg-[length:10px_10px] bg-[position:0_0,5px_5px]" />
           )}
@@ -658,9 +714,9 @@ const ColorPicker = ({
               disabled={disabled || mode !== 'hex'}
               spellCheck="false"
               className={cn(
-                'w-full bg-background px-2 rounded-md border border-input text-primary',
+                'w-full bg-background px-2 pr-8 rounded-md border border-input text-primary',
                 'focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary',
-                'transition-all duration-200',
+                'transition-all duration-200 truncate',
                 disabled && 'cursor-not-allowed',
                 sizeClasses.input
               )}
@@ -691,8 +747,9 @@ const ColorPicker = ({
         </div>
       </div>
 
-      {/* Saturation-Lightness area */}
+      {/* saturation-lightness area */}
       <div
+        ref={slAreaRef}
         className={cn(
           'w-full mb-3 relative rounded-md cursor-crosshair overflow-hidden',
           'border border-border',
@@ -702,9 +759,9 @@ const ColorPicker = ({
         style={{
           backgroundColor: `hsl(${colorObj.hsl.h}, 100%, 50%)`,
         }}
-        onClick={handleSLAreaChange}
+        onMouseDown={handleSLAreaChange}
       >
-        {/* White to transparent gradient (horizontal) */}
+        {/* white to transparent gradient (horizontal) */}
         <div
           className="absolute inset-0"
           style={{
@@ -713,7 +770,7 @@ const ColorPicker = ({
           }}
         />
 
-        {/* Black to transparent gradient (vertical) */}
+        {/* black to transparent gradient (vertical) */}
         <div
           className="absolute inset-0"
           style={{
@@ -721,7 +778,7 @@ const ColorPicker = ({
           }}
         />
 
-        {/* Color indicator */}
+        {/*cColor indicator */}
         <div
           className="absolute w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-md"
           style={{
@@ -731,7 +788,7 @@ const ColorPicker = ({
         />
       </div>
 
-      {/* Hue slider */}
+      {/* hue slider */}
       <div className="mb-3">
         <input
           type="range"
@@ -748,16 +805,15 @@ const ColorPicker = ({
             sizeClasses.slider
           )}
           style={{
-            // Custom track and thumb styling
             WebkitAppearance: 'none',
             appearance: 'none',
           }}
         />
       </div>
 
-      {/* Alpha slider */}
+      {/* alpha slider */}
       {withAlpha && (
-        <div className="mb-4 relative overflow-hidden">
+        <div className="mb-4 relative flex items-center">
           <div
             className={cn(
               'absolute inset-0 rounded-lg overflow-hidden opacity-50 bg-[linear-gradient(45deg,#ccc_25%,transparent_25%,transparent_75%,#ccc_75%),linear-gradient(45deg,#ccc_25%,transparent_25%,transparent_75%,#ccc_75%)] bg-[length:10px_10px] bg-[position:0_0,5px_5px]',
@@ -779,7 +835,7 @@ const ColorPicker = ({
             onChange={handleAlphaChange}
             disabled={disabled}
             className={cn(
-              'w-full appearance-none rounded-lg relative bg-transparent',
+              'w-full appearance-none rounded-lg relative bg-transparent z-10',
               'cursor-pointer',
               disabled && 'cursor-not-allowed',
               sizeClasses.slider
@@ -793,7 +849,7 @@ const ColorPicker = ({
         </div>
       )}
 
-      {/* Format toggle buttons */}
+      {/* format toggle buttons */}
       {showFormatToggle && (
         <div className="flex border rounded-md border-input mb-4 bg-background">
           {(['hex', 'rgb', 'hsl'] as ColorMode[]).map((m) => (
@@ -955,9 +1011,9 @@ const ColorPicker = ({
         </div>
       )}
 
-      {/* Tools & actions */}
+      {/* tools */}
       <div className="flex items-center gap-2 mb-4">
-        {/* Eyedropper button */}
+        {/* eyedropper button */}
         {showEyeDropper && isEyeDropperSupported && (
           <button
             type="button"
@@ -976,7 +1032,7 @@ const ColorPicker = ({
           </button>
         )}
 
-        {/* Reset button */}
+        {/* reset button */}
         <button
           type="button"
           onClick={() => handleColorChange(defaultColor)}
@@ -994,7 +1050,7 @@ const ColorPicker = ({
         </button>
       </div>
 
-      {/* Recent colors */}
+      {/* recent colors */}
       {showRecentColors && recentColors.length > 0 && (
         <div className="mb-4">
           <div className="text-xs text-muted-foreground mb-2">Recent</div>
@@ -1023,7 +1079,7 @@ const ColorPicker = ({
         </div>
       )}
 
-      {/* Color presets */}
+      {/* color presets */}
       {showPresets && (
         <div>
           <div className="text-xs text-muted-foreground mb-2">Presets</div>
