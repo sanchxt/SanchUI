@@ -17,5 +17,6 @@ export * from './components/atoms/spinner';
 export * from './components/atoms/switch';
 export * from './components/atoms/textarea';
 export * from './components/atoms/tooltip';
+export * from './components/atoms/typography';
 
 export * from './components/molecules/breadcrumbs';
