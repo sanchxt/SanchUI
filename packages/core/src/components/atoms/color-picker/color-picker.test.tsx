@@ -356,9 +356,8 @@ describe('ColorPicker', () => {
     const slArea = container.querySelector(`.cursor-crosshair`);
     expect(slArea).toBeInTheDocument();
 
-    // Click in the middle of the area
     // This is a bit tricky to test precisely because getBoundingClientRect is not implemented in jsdom
-    // So we mock a click event with clientX and clientY properties
+    // So we mock a mouseDown event with clientX and clientY properties
     if (slArea) {
       const mockEvent = {
         clientX: 50,
@@ -375,8 +374,8 @@ describe('ColorPicker', () => {
         },
       };
 
-      // Simulate a click event with our mock event object
-      fireEvent.click(slArea, mockEvent);
+      // Simulate a mouseDown event with our mock event object instead of click
+      fireEvent.mouseDown(slArea, mockEvent);
 
       // Check if onChange was called
       expect(handleChange).toHaveBeenCalled();
