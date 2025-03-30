@@ -21,3 +21,4 @@ export * from './components/atoms/tooltip';
 export * from './components/atoms/typography';
 
 export * from './components/molecules/breadcrumbs';
+export * from './components/molecules/toast';
