@@ -11,6 +11,7 @@ export * from './components/atoms/link';
 export * from './components/atoms/otp-input';
 export * from './components/atoms/progress';
 export * from './components/atoms/radio';
+export * from './components/atoms/range-slider';
 export * from './components/atoms/select';
 export * from './components/atoms/skeleton';
 export * from './components/atoms/spinner';
