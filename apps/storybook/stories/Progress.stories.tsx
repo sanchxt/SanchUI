@@ -70,8 +70,19 @@ export const Default: Story = {
   args: {
     value: 40,
     size: 'md',
-    color: 'primary',
+    color: 'default',
   },
+
+  render: (args) => (
+    <div className="w-80">
+      <div className="flex flex-col space-y-4 w-80">
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Default</p>
+        </div>
+        <Progress {...args} />
+      </div>
+    </div>
+  ),
 };
 
 // Sizes
