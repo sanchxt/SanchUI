@@ -12,13 +12,13 @@ export default defineConfig({
   outDir: 'dist',
   target: 'node18',
 
-  // Handle templates and registry during build
+  // handle templates and registry during build
   async onSuccess() {
-    // Copy templates directory to output
+    // copy templates directory to output
     const srcTemplates = path.join(__dirname, 'src', 'templates');
     const distTemplates = path.join(__dirname, 'dist', 'templates');
 
-    // Check if src/templates exists
+    // check: src/templates exists
     if (fs.existsSync(srcTemplates)) {
       console.log('Copying templates to dist/templates');
       await fs.copy(srcTemplates, distTemplates);
@@ -26,7 +26,7 @@ export default defineConfig({
       console.warn('No templates directory found at src/templates');
     }
 
-    // Copy registry.json to root of dist
+    // copy registry.json to root of dist
     const srcRegistry = path.join(__dirname, 'src', 'utils', 'registry.json');
     const distRegistry = path.join(__dirname, 'dist', 'registry.json');
 

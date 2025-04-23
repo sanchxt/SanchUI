@@ -4,10 +4,11 @@ import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 import { getPackageRoot, getRegistryPath } from './utils/paths';
+import { handleAddCommand } from './commands/add';
 
 const program = new Command();
 
-// Get package version dynamically
+// get package version dynamically
 let version = '0.1.0';
 try {
   const packagePath = path.join(getPackageRoot(), 'package.json');
@@ -19,13 +20,13 @@ try {
   console.warn('Could not determine package version, using default');
 }
 
-// Set up CLI
+// set up CLI
 program
   .name('sanch')
   .description('CLI for installing Sanch UI components')
   .version(version);
 
-// Add command
+// add command
 program
   .command('add <component...>')
   .description('Add components to your project')
@@ -35,22 +36,16 @@ program
     'components'
   )
   .option('-f, --force', 'Overwrite existing components', false)
+  .option('--dry-run', 'Show what would be done without making changes', false)
+  .option('--show-dependencies', 'Show dependency tree', false)
+  .option('--skip-dependencies', 'Skip installing dependencies', false)
+  .option('--install-packages', 'Install npm package dependencies', true)
+  .option('--no-install-packages', 'Skip installing npm package dependencies')
   .action(async (components, options) => {
     console.log(chalk.blue('Adding components:'), components.join(', '));
 
     try {
-      // Load registry
-      const registryPath = getRegistryPath();
-      if (!fs.existsSync(registryPath)) {
-        console.error(
-          chalk.red('Component registry not found. Run build:templates first.')
-        );
-        process.exit(1);
-      }
-
-      console.log(chalk.yellow('This feature is not yet implemented.'));
-      console.log(chalk.gray(`Registry found at: ${registryPath}`));
-      // This will be implemented in the Dependency Resolution phase
+      await handleAddCommand(components, options);
     } catch (error) {
       console.error(
         chalk.red('Error:'),
@@ -60,7 +55,7 @@ program
     }
   });
 
-// Init command
+// init command
 program
   .command('init')
   .description('Initialize Sanch UI in your project')
@@ -72,17 +67,17 @@ program
   .action(async (options) => {
     console.log(chalk.blue('Initializing Sanch UI in your project'));
     console.log(chalk.yellow('This feature is not yet implemented.'));
-    // This will be implemented in the Core Functionality phase
+    // will be implemented later
   });
 
-// List command
+// list command
 program
   .command('list')
   .description('List all available components')
   .option('-i, --installed', 'Show only installed components')
   .action(async (options) => {
     try {
-      // Load registry
+      // load registry
       const registryPath = getRegistryPath();
 
       if (!fs.existsSync(registryPath)) {
@@ -109,7 +104,7 @@ program
     }
   });
 
-// Remove command
+// remove command
 program
   .command('remove <component...>')
   .description('Remove components from your project')
@@ -117,20 +112,20 @@ program
   .action(async (components, options) => {
     console.log(chalk.blue('Removing components:'), components.join(', '));
     console.log(chalk.yellow('This feature is not yet implemented.'));
-    // This will be implemented in the Core Functionality phase
+    // will be implemented later
   });
 
-// Check command
+// check command
 program
   .command('check')
   .description('Check component health')
   .action(async () => {
     console.log(chalk.blue('Checking component health'));
     console.log(chalk.yellow('This feature is not yet implemented.'));
-    // This will be implemented in the Enhanced Features phase
+    // will be implemented later
   });
 
-// Update command
+// update command
 program
   .command('update [component...]')
   .description('Update components')
@@ -138,13 +133,13 @@ program
   .action(async (components, options) => {
     console.log(chalk.blue('Updating components'));
     console.log(chalk.yellow('This feature is not yet implemented.'));
-    // This will be implemented in the Enhanced Features phase
+    // will be implemented later
   });
 
-// Parse command line arguments
+// parse command line arguments
 program.parse();
 
-// If no arguments, show help
+// if no arguments, show help
 if (!process.argv.slice(2).length) {
   program.outputHelp();
 }
